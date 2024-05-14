@@ -6,20 +6,31 @@ function get_res() {
         console.log(response.json())
     })
 }
+function make_sparse() {
+    var numRows = document.getElementById("N_rows").value;
+    var numCols = document.getElementById("N_Cols").value;
+    console.log("numRows:", numRows);
+    console.log("numCols:", numCols);
+    const url = `http://localhost:5000/api/make_maze_sparse/${numRows}/${numCols}`;
+
+    // Make the GET request to the Flask endpoint
+    fetch(url)
+    .then(response => {
+        // Parse the JSON response
+        return response.json();
+    })
+    .then(data => {
+        // Do something with the JSON data returned from the Flask endpoint
+        drawMaze(data)
+    })
+    .catch(error => {
+        // Handle any errors that occur during the fetch request
+        console.error('Error:', error);
+    });
+}
 const counter=0
 // Define your maze as a 2D array of 1s and 0s
-function drawMaze() {
-    const maze = [
-        ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1'],
-        ['1', '0', '0', '0', '1', '0', '0', '0', '0', '1'],
-        ['1', '0', '1', '0', '1', '0', '1', '1', '0', '1'],
-        ['1', '0', '1', '0', '1', '0', '0', '1', '0', '1'],
-        ['1', '0', '1', '0', '1', '1', '0', '1', '0', '1'],
-        ['1', '0', '1', '0', '0', '0', '0', '1', '0', '1'],
-        ['1', '0', '1', '0', '1', '1', '0', '1', '0', '1'],
-        ['1', '0', '0', 'X', '0', '0', '0', '0', '0', '1'],
-        ['1', '1', '1', '1', '1', '1', '1', '1', '1', '1']
-    ]
+function drawMaze(maze) {
     
     const canvas = document.createElement("canvas")
     const ctx = canvas.getContext("2d")
@@ -54,3 +65,7 @@ function drawMaze() {
     mazeContainer.innerHTML = ""//set empty.
     mazeContainer.appendChild(canvas)
 }//make maze
+
+function test_neighbors() {
+    
+}
