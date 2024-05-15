@@ -55,6 +55,10 @@ function drawMaze(maze) {
                 ctx.fillStyle = "red"
                 ctx.fillRect(x, y, cellSize, cellSize)
             } 
+            else if(maze[row][col] === 'Y'){
+                ctx.fillStyle = "yellow"
+                ctx.fillRect(x, y, cellSize, cellSize)
+            } 
             else { // Draw free spaces for 0s
                 ctx.fillStyle = freeSpaceColor
                 ctx.fillRect(x, y, cellSize, cellSize)
