@@ -41,18 +41,15 @@ def get_test_maze_solution():
 @app.route("/api/make_maze_sparse/<int:dim1>/<int:dim2>", methods=["GET"])
 def make_maze_sparse(dim1, dim2):
     #for now ignore dim1dim2
-    maze,distance = make_rand_maze()
-    while(distance <10):
-        maze,distance = make_rand_maze()
-    print("distance: ", distance)
+    maze = make_prims_maze()
     return jsonify(maze)
 
 def make_rand_maze():
 #for now ignore dim1dim2
     maze = []
-    for i in range(10):
+    for i in range(30):
         row = []
-        for j in range(10):
+        for j in range(30):
             row.append('1')
         maze.append(row)
     #10x10 maze with 1s
@@ -154,6 +151,85 @@ def recursive_opt(maze,visited,current, spaces):
     spaces -= 1
     recursive_opt(maze,visited,next_node, spaces)
     return maze
+
+#try prims.
+
+def get_frontier(maze, coord):
+    neighbors=[]
+    if coord.X < len(maze[0]) - 2:
+        new_coord = Coords(coord.X + 2, coord.Y)
+        if(maze[new_coord.Y][new_coord.X]=='1'):#unexplored
+            neighbors.append(new_coord)
+    if coord.X > 1:
+        new_coord = Coords(coord.X - 2, coord.Y)
+        if(maze[new_coord.Y][new_coord.X]=='1'):
+            neighbors.append(new_coord)
+    if coord.Y > 1:
+        new_coord = Coords(coord.X , coord.Y-2)
+        if(maze[new_coord.Y][new_coord.X]=='1'):
+            neighbors.append(new_coord)
+    if coord.Y < len(maze) - 2:
+        new_coord = Coords(coord.X , coord.Y + 2)
+        if(maze[new_coord.Y][new_coord.X]=='1'):
+            neighbors.append(new_coord)
+    return neighbors
+
+def possible_passage(maze, coord):
+    neighbors=[]
+    if coord.X < len(maze[0]) - 2:
+        new_coord = Coords(coord.X + 2, coord.Y)
+        if(maze[new_coord.Y][new_coord.X]!='1'):#explored exists a path.
+            new_coord = Coords(coord.X+1 , coord.Y)
+            neighbors.append(new_coord)
+    if coord.X > 1:
+        new_coord = Coords(coord.X - 2, coord.Y)
+        if(maze[new_coord.Y][new_coord.X]!='1'):
+            new_coord = Coords(coord.X -1 , coord.Y)
+            neighbors.append(new_coord)
+    if coord.Y > 1:
+        new_coord = Coords(coord.X , coord.Y-2)
+        if(maze[new_coord.Y][new_coord.X]!='1'):
+            new_coord = Coords(coord.X , coord.Y - 1)
+            neighbors.append(new_coord)
+    if coord.Y < len(maze) - 2:
+        new_coord = Coords(coord.X , coord.Y + 2)
+        if(maze[new_coord.Y][new_coord.X]!='1'):
+            new_coord = Coords(coord.X , coord.Y + 1)
+            neighbors.append(new_coord)
+    return neighbors
+
+def make_prims_maze():
+    maze = []
+    for i in range(30):
+        row = []
+        for j in range(30):
+            row.append('1')
+        maze.append(row)
+    random_start =  Coords(random.randint(0, 29),random.randint(0, 29))
+    maze[random_start.Y][random_start.X]='X'
+    front = []
+    next = get_frontier(maze,random_start)
+    for x in next:
+        front.append(x)
+    while front:
+        #get rand coord
+        rand_index=random.randint(0, len(front)-1)
+        curr_Coord=front[rand_index]
+        front.pop(rand_index)
+        maze[curr_Coord.Y][curr_Coord.X]='0'
+        #now make passage
+        passages = possible_passage(maze, curr_Coord)
+        rand_passage = passages[random.randint(0, len(passages)-1)]
+        maze[rand_passage.Y][rand_passage.X]='0'
+        #repopulate front.
+        next = get_frontier(maze,curr_Coord)
+        if(len(next)==0 and len(front)==0):
+            maze[rand_passage.Y][rand_passage.X]='Y'
+        for x in next:
+            front.append(x)
+        print(curr_Coord)
+    return maze
+        
 
             
 
