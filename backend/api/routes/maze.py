@@ -41,7 +41,7 @@ def get_test_maze_solution():
 @app.route("/api/make_maze_sparse/<int:dim1>/<int:dim2>", methods=["GET"])
 def make_maze_sparse(dim1, dim2):
     #for now ignore dim1dim2
-    maze = make_prims_maze()
+    maze = make_prims_maze(dim1,dim2)
     return jsonify(maze)
 
 def make_rand_maze():
@@ -198,11 +198,11 @@ def possible_passage(maze, coord):
             neighbors.append(new_coord)
     return neighbors
 
-def make_prims_maze():
+def make_prims_maze(dim1,dim2):
     maze = []
-    for i in range(30):
+    for i in range(dim1):
         row = []
-        for j in range(30):
+        for j in range(dim2):
             row.append('1')
         maze.append(row)
     random_start =  Coords(random.randint(0, 29),random.randint(0, 29))
