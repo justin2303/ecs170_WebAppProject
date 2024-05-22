@@ -1,4 +1,4 @@
-from . import app
+from api import app
 from flask import request
 
 @app.route("/api/algorithm/dijkstra", methods=["POST"])

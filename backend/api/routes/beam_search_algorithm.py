@@ -1,4 +1,4 @@
-from . import app
+from api import app
 from flask import request
 
 @app.route("/api/algorithm/beam_search", methods=["POST"])
@@ -8,7 +8,7 @@ def solve_maze_beam_search():
 
 
 # Harinderjit Malhi
-from utils.node import Node
+from api.utils.node import Node
 
 # Variable "layout": a 2D list of 0s and 1s
 # Purpose of function: create a 2D list of nodes based on the 0s and 1s
