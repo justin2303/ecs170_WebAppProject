@@ -198,6 +198,30 @@ def possible_passage(maze, coord):
             neighbors.append(new_coord)
     return neighbors
 
+def cleanup(maze):
+    neighbors=[]
+    if coord.X < len(maze[0]) - 2:
+        new_coord = Coords(coord.X + 2, coord.Y)
+        if(maze[new_coord.Y][new_coord.X]!='1'):#explored exists a path.
+            new_coord = Coords(coord.X+1 , coord.Y)
+            neighbors.append(new_coord)
+    if coord.X > 1:
+        new_coord = Coords(coord.X - 2, coord.Y)
+        if(maze[new_coord.Y][new_coord.X]!='1'):
+            new_coord = Coords(coord.X -1 , coord.Y)
+            neighbors.append(new_coord)
+    if coord.Y > 1:
+        new_coord = Coords(coord.X , coord.Y-2)
+        if(maze[new_coord.Y][new_coord.X]!='1'):
+            new_coord = Coords(coord.X , coord.Y - 1)
+            neighbors.append(new_coord)
+    if coord.Y < len(maze) - 2:
+        new_coord = Coords(coord.X , coord.Y + 2)
+        if(maze[new_coord.Y][new_coord.X]!='1'):
+            new_coord = Coords(coord.X , coord.Y + 1)
+            neighbors.append(new_coord)
+    return neighbors
+
 def make_prims_maze(dim1,dim2):
     maze = []
     for i in range(dim1):
@@ -205,7 +229,7 @@ def make_prims_maze(dim1,dim2):
         for j in range(dim2):
             row.append('1')
         maze.append(row)
-    random_start =  Coords(random.randint(0, 29),random.randint(0, 29))
+    random_start =  Coords(random.randint(0, dim1-1),random.randint(0, dim2-1))
     maze[random_start.Y][random_start.X]='X'
     front = []
     next = get_frontier(maze,random_start)
@@ -227,11 +251,29 @@ def make_prims_maze(dim1,dim2):
             maze[rand_passage.Y][rand_passage.X]='Y'
         for x in next:
             front.append(x)
-        print(curr_Coord)
+    maze = cleanup(maze)
     return maze
-        
 
-            
+def cleanup(maze):
+    for i in range(len(maze)):
+        for j in range(len(maze[0])):
+            if maze[i][j]!='1':
+                continue
+            temp = Coords(j,i)
+            neighbors = get_neighbors(maze, temp)
+            if(len(neighbors)!=4):
+                continue
+            tf = True
+            for x in neighbors:
+                print(x.Y, x.X)
+                if(maze[x.Y][x.X]=='1'):
+                    tf=False
+                    break
+            #if any neighbosr are '1' forget it, else set to 0
+            if tf:
+                maze[i][j]='0' 
+
+    return maze                   
 
 
     
