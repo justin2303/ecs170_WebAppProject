@@ -36,7 +36,7 @@ function drawMaze(maze) {
     const ctx = canvas.getContext("2d")
     
     // Define cell size and wall color
-    const cellSize = 20
+    const cellSize = 5
     const wallColor = "black"
     const freeSpaceColor = "white"
     canvas.width = cellSize*maze[0].length // Set canvas width
