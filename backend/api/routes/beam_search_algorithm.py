@@ -1,11 +1,20 @@
+from flask import request, jsonify
 from api import app
-from flask import request
 
 @app.route("/api/algorithm/beam_search", methods=["POST"])
 def solve_maze_beam_search():
     maze = request.json.get('maze')
+    start_coords = tuple(request.json.get('start_coords'))
+    end_coords = tuple(request.json.get('end_coords'))
+    
+    try:
+        # solution = beam_search(maze, start_coords, end_coords, beam_width)
+        pass
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 400
+    
+    #return jsonify({'solution': solution), 200
     pass
-
 
 # Harinderjit Malhi
 from api.utils.node import Node

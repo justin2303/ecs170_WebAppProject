@@ -222,37 +222,44 @@ def cleanup(maze):
             neighbors.append(new_coord)
     return neighbors
 
-def make_prims_maze(dim1,dim2):
+def make_prims_maze(dim1, dim2):
     maze = []
     for i in range(dim1):
         row = []
         for j in range(dim2):
             row.append('1')
         maze.append(row)
-    random_start =  Coords(random.randint(0, dim1-1),random.randint(0, dim2-1))
-    maze[random_start.Y][random_start.X]='X'
+        
+    random_start = Coords(random.randint(0, dim1-1), random.randint(0, dim2-1))
+    maze[random_start.Y][random_start.X] = 'X'
+    
     front = []
-    next = get_frontier(maze,random_start)
+    next = get_frontier(maze, random_start)
     for x in next:
         front.append(x)
+    
     while front:
-        #get rand coord
-        rand_index=random.randint(0, len(front)-1)
-        curr_Coord=front[rand_index]
+        # Get random coordinate
+        rand_index = random.randint(0, len(front)-1)
+        curr_Coord = front[rand_index]
         front.pop(rand_index)
-        maze[curr_Coord.Y][curr_Coord.X]='0'
-        #now make passage
+        maze[curr_Coord.Y][curr_Coord.X] = '0'
+        
+        # Now make passage
         passages = possible_passage(maze, curr_Coord)
         rand_passage = passages[random.randint(0, len(passages)-1)]
-        maze[rand_passage.Y][rand_passage.X]='0'
-        #repopulate front.
-        next = get_frontier(maze,curr_Coord)
-        if(len(next)==0 and len(front)==0):
-            maze[rand_passage.Y][rand_passage.X]='Y'
+        maze[rand_passage.Y][rand_passage.X] = '0'
+        
+        # Repopulate front.
+        next = get_frontier(maze, curr_Coord)
+        if(len(next) == 0 and len(front) == 0):
+            maze[rand_passage.Y][rand_passage.X] = 'Y'
         for x in next:
             front.append(x)
+    
     maze = cleanup(maze)
     return maze
+
 
 def cleanup(maze):
     for i in range(len(maze)):
@@ -265,7 +272,7 @@ def cleanup(maze):
                 continue
             tf = True
             for x in neighbors:
-                print(x.Y, x.X)
+                #print(x.Y, x.X)
                 if(maze[x.Y][x.X]=='1'):
                     tf=False
                     break

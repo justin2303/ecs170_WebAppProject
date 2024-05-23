@@ -1,11 +1,19 @@
+from flask import request, jsonify
 from api import app
-from flask import request
 
 @app.route("/api/algorithm/astar", methods=["POST"])
 def solve_maze_astar():
     maze = request.json.get('maze')
-    pass
-
+    start_coords = tuple(request.json.get('start_coords'))
+    end_coords = tuple(request.json.get('end_coords'))
+    
+    try:
+        solution = astar(maze, start_coords, end_coords)
+    except ValueError as e:
+        print(e)
+        return jsonify({'error': str(e)}), 400
+    
+    return jsonify({ 'solution': solution }), 200
 
 # Katie Sharp
 import heapq
@@ -166,4 +174,5 @@ def mazeRun(maze, start, end):
 
     print(path)
 
-mazeCreate()
+if __name__ == "__main__":
+    mazeCreate()
