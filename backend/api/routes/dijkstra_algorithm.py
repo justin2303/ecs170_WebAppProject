@@ -10,9 +10,9 @@ def solve_maze_dijkstra():
     try:
         solution = dijkstra_solve_maze(maze, start_coords, end_coords)
     except ValueError as e:
-        return jsonify({'error': str(e)}), 400
+        return jsonify({ 'error': str(e)} ), 400
     
-    return jsonify({'solution': solution}), 200
+    return jsonify( {'solution': solution} ), 200
 
 
 # Maia Burton

@@ -26,12 +26,17 @@ class TestApp(unittest.TestCase):
     def test_solve_maze_astar(self):
         response = self.app.post("/api/algorithm/astar", json=maze_data)
         self.assertEqual(response.status_code, 200)
-        print("Astar:", response.get_json())
+        print("A*:", response.get_json())
 
     def test_solve_maze_dijkstra(self):
         response = self.app.post("/api/algorithm/dijkstra", json=maze_data)
         self.assertEqual(response.status_code, 200)
         print("Dijkstra:", response.get_json())
+
+    def test_solve_maze_beam_search(self):
+        response = self.app.post("/api/algorithm/beam_search", json=maze_data)
+        self.assertEqual(response.status_code, 200)
+        print("Beam Search:", response.get_json())
 
 if __name__ == '__main__':
     generate_maze(10, 10)

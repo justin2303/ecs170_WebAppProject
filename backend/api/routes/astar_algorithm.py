@@ -11,7 +11,7 @@ def solve_maze_astar():
         solution = astar(maze, start_coords, end_coords)
     except ValueError as e:
         print(e)
-        return jsonify({'error': str(e)}), 400
+        return jsonify( {'error': str(e)} ), 400
     
     return jsonify({ 'solution': solution }), 200
 
