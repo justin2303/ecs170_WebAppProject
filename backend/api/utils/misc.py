@@ -31,9 +31,9 @@ def display_maze(maze_data):
     for i, row in enumerate(maze):
         for j, cell in enumerate(row):
             if (i, j) == start_coords:
-                print('X', end=' ')
+                print(PLAYER, end=' ')
             elif (i, j) == end_coords:
-                print('Y', end=' ')
+                print(GOAL, end=' ')
             elif cell == 1:
                 print('\u2588', end=' ')
             else:

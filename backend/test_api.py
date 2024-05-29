@@ -1,6 +1,6 @@
 import unittest
 from api import app
-from api.utils.misc import extract_maze_data, display_maze
+from api.utils.misc import display_maze
 
 maze_data = None
 
@@ -10,12 +10,6 @@ def generate_maze(rows, cols):
     response = test_app.get(f"/api/make_maze_sparse/{rows}/{cols}")
     assert response.status_code == 200
     maze_data = response.get_json()
-    maze, start_coords, end_coords = extract_maze_data(maze_data)
-    maze_data = {
-        'maze': maze,
-        'start_coords': start_coords,
-        'end_coords': end_coords
-    }
     display_maze(maze_data)
 
 class TestApp(unittest.TestCase):

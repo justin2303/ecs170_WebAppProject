@@ -6,7 +6,10 @@ def solve_maze_beam_search():
     maze = request.json.get('maze')
     start_coords = tuple(request.json.get('start_coords'))
     end_coords = tuple(request.json.get('end_coords'))
-    beam_width = 20
+    beam_width = request.json.get('beam_width')
+
+    if beam_width is None:
+        beam_width = 20
 
     try:
         grid = create_nodes_grid(maze)

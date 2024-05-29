@@ -1,5 +1,7 @@
 from flask import jsonify
 from api import app
+from api.utils.misc import extract_maze_data
+
 import random
 import queue
 class Coords:
@@ -42,7 +44,27 @@ def get_test_maze_solution():
 def make_maze_sparse(dim1, dim2):
     #for now ignore dim1dim2
     maze = make_prims_maze(dim1,dim2)
-    return jsonify(maze)
+    maze, start_coords, end_coords = extract_maze_data(maze)
+
+    missing_data = []
+    if maze is None:
+        missing_data.append("Maze coordinates")
+    if start_coords is None:
+        missing_data.append("Start coordinates")
+    if end_coords is None:
+        missing_data.append("End coordinates")
+    
+    if missing_data:
+        error_message = ", ".join(missing_data) + " are missing"
+        print(error_message, "\n\n\n\n")
+        return jsonify({'error': error_message}), 400
+
+    maze_data = {
+        'maze': maze,
+        'start_coords': start_coords,
+        'end_coords': end_coords
+    }
+    return jsonify(maze_data), 200
 
 def make_rand_maze():
 #for now ignore dim1dim2
@@ -175,30 +197,6 @@ def get_frontier(maze, coord):
     return neighbors
 
 def possible_passage(maze, coord):
-    neighbors=[]
-    if coord.X < len(maze[0]) - 2:
-        new_coord = Coords(coord.X + 2, coord.Y)
-        if(maze[new_coord.Y][new_coord.X]!='1'):#explored exists a path.
-            new_coord = Coords(coord.X+1 , coord.Y)
-            neighbors.append(new_coord)
-    if coord.X > 1:
-        new_coord = Coords(coord.X - 2, coord.Y)
-        if(maze[new_coord.Y][new_coord.X]!='1'):
-            new_coord = Coords(coord.X -1 , coord.Y)
-            neighbors.append(new_coord)
-    if coord.Y > 1:
-        new_coord = Coords(coord.X , coord.Y-2)
-        if(maze[new_coord.Y][new_coord.X]!='1'):
-            new_coord = Coords(coord.X , coord.Y - 1)
-            neighbors.append(new_coord)
-    if coord.Y < len(maze) - 2:
-        new_coord = Coords(coord.X , coord.Y + 2)
-        if(maze[new_coord.Y][new_coord.X]!='1'):
-            new_coord = Coords(coord.X , coord.Y + 1)
-            neighbors.append(new_coord)
-    return neighbors
-
-def cleanup(maze):
     neighbors=[]
     if coord.X < len(maze[0]) - 2:
         new_coord = Coords(coord.X + 2, coord.Y)
