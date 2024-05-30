@@ -23,9 +23,14 @@
             <td>Number of Columns</td>
             <td><input type="number" id="N_Cols" placeholder="4" value="4"></td>
           </tr>
+          <tr>
+            <td>Max Time (seconds)</td>
+            <td><input type="number" id="maxTime" placeholder="5" value="5"></td>
+          </tr>
         </tbody>
       </table>
-    <button onclick="make_sparse()">test fetch</button>
+      <button id="fetchButton" onclick="startTimer()">test fetch</button>
+      <div id="timer">00:00:00.000</div>
     <button onclick="test_neighbors()">neighbors!</button>
 </body>
 </html>

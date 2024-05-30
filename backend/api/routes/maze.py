@@ -228,7 +228,7 @@ def make_prims_maze(dim1, dim2):
             row.append('1')
         maze.append(row)
         
-    random_start = Coords(random.randint(0, dim1-1), random.randint(0, dim2-1))
+    random_start = Coords(random.randint(0, dim2-1), random.randint(0, dim1-1))
     maze[random_start.Y][random_start.X] = 'X'
     
     front = []

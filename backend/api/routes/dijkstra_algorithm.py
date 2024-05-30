@@ -1,3 +1,4 @@
+import time
 from flask import request, jsonify
 from api import app
 
@@ -8,11 +9,15 @@ def solve_maze_dijkstra():
     end_coords = tuple(request.json.get('end_coords'))
     
     try:
+        start_time = time.perf_counter()
         solution = dijkstra_solve_maze(maze, start_coords, end_coords)
+        end_time = time.perf_counter()
+
+        elapsed_time = end_time - start_time
     except ValueError as e:
         return jsonify({ 'error': str(e)} ), 400
     
-    return jsonify( {'solution': solution} ), 200
+    return jsonify({ 'solution': solution, 'timeElapsed': elapsed_time }), 200
 
 
 # Maia Burton

@@ -1,3 +1,4 @@
+import time
 from flask import request, jsonify
 from api import app
 
@@ -15,14 +16,20 @@ def solve_maze_beam_search():
         grid = create_nodes_grid(maze)
         start_node = grid[start_coords[0]][start_coords[1]]
         goal_node = grid[end_coords[0]][end_coords[1]]
+
+        start_time = time.perf_counter()
         path = beam_search(grid, start_node, goal_node, beam_width)
+        end_time = time.perf_counter()
+
+        elapsed_time = end_time - start_time
+
         solution = []
         for node in path:
             solution.append((node.y, node.x))
     except ValueError as e:
         return jsonify( {'error': str(e)} ), 400
     
-    return jsonify( {'solution': solution} ), 200
+    return jsonify({ 'solution': solution, 'timeElapsed': elapsed_time }), 200
 
 # Harinderjit Malhi
 from api.utils.node import Node

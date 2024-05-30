@@ -8,6 +8,12 @@ function get_res() {
 }
 
 function make_sparse() {
+    document.getElementById("fetchButton").disabled = true;
+
+    setTimeout(() => {
+        document.getElementById("fetchButton").disabled = false;
+    }, 100);
+
     var numRows = document.getElementById("N_rows").value;
     var numCols = document.getElementById("N_Cols").value;
     console.log("numRows:", numRows);
@@ -24,16 +30,11 @@ function make_sparse() {
         // Do something with the JSON data returned from the Flask endpoint
         drawMaze(data.maze, data.start_coords, data.end_coords);
 
-        // Move these elsewhere
-        // This is just for demoing
         const aStarSolution = await getAStarSolution(data.maze, data.start_coords, data.end_coords);
-        console.log(aStarSolution);
-
         const dijkstraSolution = await getDijkstraSolution(data.maze, data.start_coords, data.end_coords);
-        console.log(dijkstraSolution);
-
         const beamSearchSolution = await getBeamSearchSolution(data.maze, data.start_coords, data.end_coords, 20);
-        console.log(beamSearchSolution)
+
+        animateSolutions(aStarSolution, dijkstraSolution, beamSearchSolution);
     })
     .catch(error => {
         // Handle any errors that occur during the fetch request
@@ -106,8 +107,7 @@ async function getAStarSolution(maze, start_coords, end_coords) {
         return response.json();
     })
     .then(data => {
-        const solution = data.solution;
-        return solution;
+        return data;
     })
     .catch(error => {
         console.error("Error:", error);
@@ -130,8 +130,7 @@ async function getDijkstraSolution(maze, start_coords, end_coords) {
         return response.json();
     })
     .then(data => {
-        const solution = data.solution;
-        return solution;
+        return data;
     })
     .catch(error => {
         console.error("Error:", error);
@@ -155,10 +154,89 @@ async function getBeamSearchSolution(maze, start_coords, end_coords, beam_width 
         return response.json();
     })
     .then(data => {
-        const solution = data.solution;
-        return solution;
+        return data;
     })
     .catch(error => {
         console.error("Error:", error);
     });
+}
+
+async function animateSolution(solution, color, executionTime) {
+    const canvas = document.querySelector("#mazeContainer canvas");
+    const context = canvas.getContext("2d");
+    const cellSize = 10;
+    let step = 0;
+
+    const totalTime = executionTime * 1000;
+    const animationSpeed = totalTime / solution.length;
+
+    return new Promise(resolve => {
+        const interval = setInterval(() => {
+            if (step < solution.length) {
+                const [row, col] = solution[step];
+                const x = col * cellSize;
+                const y = row * cellSize;
+                context.fillStyle = color;
+                context.fillRect(x, y, cellSize, cellSize);
+                step++;
+            } else {
+                clearInterval(interval);
+                resolve();
+            }
+        }, animationSpeed);
+    });
+}
+
+async function animateSolutions(aStarSolution, dijkstraSolution, beamSearchSolution) {
+    const aStarTime = aStarSolution.timeElapsed;
+    const dijkstraTime = dijkstraSolution.timeElapsed;
+    const beamSearchTime = beamSearchSolution.timeElapsed;
+
+    const totalTime = aStarTime + dijkstraTime + beamSearchTime;
+    const aStarRatio = aStarTime / totalTime;
+    const dijkstraRatio = dijkstraTime / totalTime;
+    const beamSearchRatio = beamSearchTime / totalTime;
+    const maxTimeSeconds = document.getElementById("maxTime").value;
+
+    await Promise.all([
+        animateSolution(aStarSolution.solution, "rgba(0, 0, 255, 0.5)", maxTimeSeconds * aStarRatio),
+        animateSolution(dijkstraSolution.solution, "rgba(0, 255, 0, 0.5)", maxTimeSeconds * dijkstraRatio),
+        animateSolution(beamSearchSolution.solution, "rgba(255, 165, 0, 0.5)", maxTimeSeconds * beamSearchRatio)
+    ]);
+
+    stopTimer();
+}
+
+let startTime;
+let timerInterval;
+
+function startTimer() {
+    if (timerInterval) {
+        clearInterval(timerInterval);
+        document.getElementById("timer").innerText = "00:00:00.000";
+    }
+    startTime = Date.now();
+    timerInterval = setInterval(updateTimer, 1);
+    
+    make_sparse();
+}
+
+function updateTimer() {
+    const elapsedTime = Date.now() - startTime;
+    let milliseconds = Math.floor(elapsedTime % 1000);
+    let seconds = Math.floor((elapsedTime / 1000) % 60);
+    let minutes = Math.floor((elapsedTime / (1000 * 60)) % 60);
+    let hours = Math.floor((elapsedTime / (1000 * 60 * 60)) % 24);
+
+    const formattedTime = 
+        (hours < 10 ? "0" + hours : hours) + ":" +
+        (minutes < 10 ? "0" + minutes : minutes) + ":" +
+        (seconds < 10 ? "0" + seconds : seconds) + "." +
+        (milliseconds < 10 ? "00" + milliseconds : milliseconds < 100 ? "0" + milliseconds : milliseconds);
+
+    document.getElementById("timer").innerText = formattedTime;
+}
+
+function stopTimer() {
+    clearInterval(timerInterval);
 }
