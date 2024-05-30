@@ -4,10 +4,10 @@ from api.utils.misc import display_maze
 
 maze_data = None
 
-def generate_maze(rows, cols):
+def test_generate_maze(rows, cols):
     global maze_data
     test_app = app.test_client()
-    response = test_app.get(f"/api/make_maze_sparse/{rows}/{cols}")
+    response = test_app.get(f"/api/maze/generate/{rows}/{cols}")
     assert response.status_code == 200
     maze_data = response.get_json()
     display_maze(maze_data)
@@ -33,5 +33,5 @@ class TestApp(unittest.TestCase):
         print("Beam Search:", response.get_json())
 
 if __name__ == '__main__':
-    generate_maze(10, 10)
+    test_generate_maze(10, 10)
     unittest.main()

@@ -1,13 +1,7 @@
 const serverUrl = 'http://localhost:5000';
 
-function get_res() {
-    fetch(`${serverUrl}/api/test_maze_solution`)
-    .then(response => {
-        console.log(response.json())
-    })
-}
-
-function make_sparse() {
+function generate_maze() {
+    stopTimer();
     document.getElementById("fetchButton").disabled = true;
 
     setTimeout(() => {
@@ -18,7 +12,7 @@ function make_sparse() {
     var numCols = document.getElementById("N_Cols").value;
     console.log("numRows:", numRows);
     console.log("numCols:", numCols);
-    const url = `${serverUrl}/api/make_maze_sparse/${numRows}/${numCols}`;
+    const url = `${serverUrl}/api/maze/generate/${numRows}/${numCols}`;
 
     // Make the GET request to the Flask endpoint
     fetch(url)
@@ -30,11 +24,12 @@ function make_sparse() {
         // Do something with the JSON data returned from the Flask endpoint
         drawMaze(data.maze, data.start_coords, data.end_coords);
 
-        const aStarSolution = await getAStarSolution(data.maze, data.start_coords, data.end_coords);
-        const dijkstraSolution = await getDijkstraSolution(data.maze, data.start_coords, data.end_coords);
-        const beamSearchSolution = await getBeamSearchSolution(data.maze, data.start_coords, data.end_coords, 20);
+        const aStarData = await getAStarData(data.maze, data.start_coords, data.end_coords);
+        const dijkstraData = await getDijkstraData(data.maze, data.start_coords, data.end_coords);
+        const beamSearchData = await getBeamSearchData(data.maze, data.start_coords, data.end_coords, 20);
 
-        animateSolutions(aStarSolution, dijkstraSolution, beamSearchSolution);
+        startTimer();
+        await animateSolutions(aStarData, dijkstraData, beamSearchData);
     })
     .catch(error => {
         // Handle any errors that occur during the fetch request
@@ -87,11 +82,7 @@ function drawMaze(maze, start_coords, end_coords) {
     mazeContainer.appendChild(canvas)
 }//make maze
 
-function test_neighbors() {
-    
-}
-
-async function getAStarSolution(maze, start_coords, end_coords) {
+async function getAStarData(maze, start_coords, end_coords) {
     return fetch(`${serverUrl}/api/algorithm/astar`, {
         method: 'POST',
         headers: {
@@ -114,7 +105,7 @@ async function getAStarSolution(maze, start_coords, end_coords) {
     });
 }
 
-async function getDijkstraSolution(maze, start_coords, end_coords) {
+async function getDijkstraData(maze, start_coords, end_coords) {
     return fetch(`${serverUrl}/api/algorithm/dijkstra`, {
         method: 'POST',
         headers: {
@@ -137,7 +128,7 @@ async function getDijkstraSolution(maze, start_coords, end_coords) {
     });
 }
 
-async function getBeamSearchSolution(maze, start_coords, end_coords, beam_width = 20) {
+async function getBeamSearchData(maze, start_coords, end_coords, beam_width = 20) {
     return fetch(`${serverUrl}/api/algorithm/beam_search`, {
         method: 'POST',
         headers: {
@@ -187,10 +178,10 @@ async function animateSolution(solution, color, executionTime) {
     });
 }
 
-async function animateSolutions(aStarSolution, dijkstraSolution, beamSearchSolution) {
-    const aStarTime = aStarSolution.timeElapsed;
-    const dijkstraTime = dijkstraSolution.timeElapsed;
-    const beamSearchTime = beamSearchSolution.timeElapsed;
+async function animateSolutions(aStarData, dijkstraData, beamSearchData) {
+    const aStarTime = aStarData.timeElapsed;
+    const dijkstraTime = dijkstraData.timeElapsed;
+    const beamSearchTime = beamSearchData.timeElapsed;
 
     const totalTime = aStarTime + dijkstraTime + beamSearchTime;
     const aStarRatio = aStarTime / totalTime;
@@ -198,13 +189,21 @@ async function animateSolutions(aStarSolution, dijkstraSolution, beamSearchSolut
     const beamSearchRatio = beamSearchTime / totalTime;
     const maxTimeSeconds = document.getElementById("maxTime").value;
 
+    const aStarSimTimeElapsed = maxTimeSeconds * aStarRatio;
+    const dijkstraSimTimeElapsed = maxTimeSeconds * dijkstraRatio;
+    const beamSearchSimTimeElapsed = maxTimeSeconds * beamSearchRatio;
+
     await Promise.all([
-        animateSolution(aStarSolution.solution, "rgba(0, 0, 255, 0.5)", maxTimeSeconds * aStarRatio),
-        animateSolution(dijkstraSolution.solution, "rgba(0, 255, 0, 0.5)", maxTimeSeconds * dijkstraRatio),
-        animateSolution(beamSearchSolution.solution, "rgba(255, 165, 0, 0.5)", maxTimeSeconds * beamSearchRatio)
+        animateSolution(aStarData.solution, "rgba(0, 0, 255, 0.5)", aStarSimTimeElapsed),
+        animateSolution(dijkstraData.solution, "rgba(0, 255, 0, 0.5)", dijkstraSimTimeElapsed),
+        animateSolution(beamSearchData.solution, "rgba(255, 165, 0, 0.5)", beamSearchSimTimeElapsed)
     ]);
 
     stopTimer();
+
+    console.log("A*: # of Steps =", aStarData.solution.length, "| Sim Time Elapsed (s) =", aStarSimTimeElapsed, "| Actual Time Elapsed (s) =", aStarData.timeElapsed);
+    console.log("Dijkstra: # of Steps =", dijkstraData.solution.length, "| Sim Time Elapsed (s) =", dijkstraSimTimeElapsed, "| Actual Time Elapsed (s) =", dijkstraData.timeElapsed);
+    console.log("Beam Search: # of Steps =", beamSearchData.solution.length, "| Sim Time Elapsed (s) =", beamSearchSimTimeElapsed, "| Actual Time Elapsed (s) =", beamSearchData.timeElapsed);
 }
 
 let startTime;
@@ -217,8 +216,6 @@ function startTimer() {
     }
     startTime = Date.now();
     timerInterval = setInterval(updateTimer, 1);
-    
-    make_sparse();
 }
 
 function updateTimer() {

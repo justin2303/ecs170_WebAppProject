@@ -10,27 +10,24 @@
     <h1>Hello, World!</h1>
     <script src="js/script.js"></script>
 
-    <button onclick="drawMaze()">Draw maze!</button>
-    <div id="mazeContainer">
-    </div>
+    <div id="mazeContainer"></div>
     <table border="1">
         <tbody>
-          <tr>
-            <td>Number of Rows</td>
-            <td><input type="number" id="N_rows" placeholder="4" value="4"></td>
-          </tr>
-          <tr>
-            <td>Number of Columns</td>
-            <td><input type="number" id="N_Cols" placeholder="4" value="4"></td>
-          </tr>
-          <tr>
-            <td>Max Time (seconds)</td>
-            <td><input type="number" id="maxTime" placeholder="5" value="5"></td>
-          </tr>
+            <tr>
+                <td>Number of Rows</td>
+                <td><input type="number" id="N_rows" placeholder="50" value="50"></td>
+            </tr>
+            <tr>
+                <td>Number of Columns</td>
+                <td><input type="number" id="N_Cols" placeholder="50" value="50"></td>
+            </tr>
+            <tr>
+                <td>Max Time (seconds)</td>
+                <td><input type="number" id="maxTime" placeholder="5" value="5"></td>
+            </tr>
         </tbody>
-      </table>
-      <button id="fetchButton" onclick="startTimer()">test fetch</button>
-      <div id="timer">00:00:00.000</div>
-    <button onclick="test_neighbors()">neighbors!</button>
+    </table>
+    <button id="fetchButton" onclick="generate_maze()">Start</button>
+    <div id="timer">00:00:00.000</div>
 </body>
 </html>
