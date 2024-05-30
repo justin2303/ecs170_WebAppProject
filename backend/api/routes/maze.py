@@ -49,28 +49,10 @@ def generate_maze(dim1, dim2):
     }
     return jsonify(maze_data), 200
 
-def make_rand_maze():
-#for now ignore dim1dim2
-    maze = []
-    for i in range(30):
-        row = []
-        for j in range(30):
-            row.append('1')
-        maze.append(row)
-    #10x10 maze with 1s
-    random_start =  Coords(random.randint(0, 9),random.randint(0, 9))
-    maze[random_start.Y][random_start.X]='X'
-    visited =[]
-    spaces = 80
-    print("rand start: ", random_start)
-    maze, current =recursive_helper(maze,visited,random_start, spaces)
-    #coord = Coords(1,1)
-    #get_neighbors(maze,coord)
-    #print(Coords(1,1)==Coords(1,2))
-    #print(Coords(1,1)==Coords(1,1))
-    print("current: ", current)
-    print("distance: ",get_dist(random_start, current))
-    return (maze,get_dist(random_start, current))
+def make_test_maze(dim1, dim2):
+    #for now ignore dim1dim2
+    maze = make_prims_maze(dim1,dim2)
+    return maze
 
 def get_neighbors(maze, coord):
     neighbors=[]
@@ -88,75 +70,9 @@ def get_neighbors(maze, coord):
         neighbors.append(new_coord)
     return neighbors
 
-def recursive_helper(maze,visited,current, spaces):
-    if spaces<=0:
-        print("setting endpos")
-        maze[current.Y][current.X]='Y'
-        return maze,current
-    visited.append(current)
-    nexts = get_neighbors(maze, current)
-    index = random.randint(0, len(nexts)-1)
-    found = False
-    count = 0
-    next = nexts[index]
-    for x in range(0, len(nexts)):
-        if(len(visited)==1 or found):
-            break
-        for y in range(0, len(visited)):
-            if visited[y]==next:
-                count += 1
-                if(count==len(nexts)):
-                    print("found loop, ending prematurely..")
-                    maze[next.Y][next.X]='Y'
-                    return maze,next
-                if(index==len(nexts)-1):
-                    index=0
-                else:
-                    index +=1
-                next = nexts[index]
-                break
-            if y== len(visited)-1:
-                found = True
-    #found an unvisited node
-    maze[next.Y][next.X]='0'
-    return recursive_helper(maze,visited,next, spaces-1)
 def get_dist(start, current):
     print(start, current)
     return abs(start.X-current.X) + abs(start.Y-current.Y)
-
-def recursive_opt(maze,visited,current, spaces):
-    print("spaces: ", spaces)
-    if spaces<=0:
-        print("setting endpos")
-        maze[current.Y][current.X]='Y'
-        return maze
-    visited.append(current)
-    nexts = get_neighbors(maze, current)
-    pq=queue.PriorityQueue()
-    for next in nexts:
-        pq.put((get_dist(visited[0], next), next))
-    next_dist, next_node = pq.get()
-    print("self: ",visited[0])
-    print(next_node)
-    found = False
-    while(not found):
-        for x in range(len(visited)):
-            print(x)
-            if visited[x] == next_node:
-                if(pq.empty()):
-                    print("circle found")
-                    maze[current.Y][current.X]='Y'
-                    return
-                next_dist, next_node = pq.get()
-                break
-            if(x== len(visited)-1):
-                found=True
-    #found next node
-    maze[next_node.Y][next_node.X]='0'
-    spaces -= 1
-    recursive_opt(maze,visited,next_node, spaces)
-    return maze
-
 #try prims.
 
 def get_frontier(maze, coord):
@@ -264,4 +180,6 @@ def cleanup(maze):
     return maze                   
 
 
-    
+"""
+references: https://stackoverflow.com/questions/29739751/implementing-a-randomly-generated-maze-using-prims-algorithm
+"""
