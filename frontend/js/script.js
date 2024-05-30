@@ -194,9 +194,9 @@ async function animateSolutions(aStarData, dijkstraData, beamSearchData) {
     const beamSearchSimTimeElapsed = maxTimeSeconds * beamSearchRatio;
 
     await Promise.all([
-        animateSolution(aStarData.solution, "rgba(0, 0, 255, 0.5)", aStarSimTimeElapsed),
-        animateSolution(dijkstraData.solution, "rgba(0, 255, 0, 0.5)", dijkstraSimTimeElapsed),
-        animateSolution(beamSearchData.solution, "rgba(255, 165, 0, 0.5)", beamSearchSimTimeElapsed)
+        animateSolution(aStarData.solution, "rgba(0, 0, 255, 0.5)", aStarSimTimeElapsed), // blue
+        animateSolution(dijkstraData.solution, "rgba(0, 255, 0, 0.5)", dijkstraSimTimeElapsed), // green
+        animateSolution(beamSearchData.solution, "rgba(255, 165, 0, 0.5)", beamSearchSimTimeElapsed) // orange
     ]);
 
     stopTimer();
