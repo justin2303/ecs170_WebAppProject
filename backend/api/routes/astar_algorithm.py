@@ -20,6 +20,7 @@ def solve_maze_astar():
     
     return jsonify({ 'solution': solution, 'timeElapsed': elapsed_time }), 200
 
+
 # Katie Sharp
 import heapq
 
