@@ -2,25 +2,18 @@ import unittest
 from api import app
 from api.utils.misc import extract_maze_data, display_maze
 import time
-
+import threading
+lock = threading.Lock()
+results=[]
 maze_data = None
 list_mazes = []
-def generate_maze(rows, cols):
+def test_generate_maze(rows, cols):
     global maze_data
     test_app = app.test_client()
-    response = test_app.get(f"/api/make_maze_sparse/{rows}/{cols}")
+    response = test_app.get(f"/api/maze/generate/{rows}/{cols}")
     assert response.status_code == 200
     maze_data = response.get_json()
-    maze, start_coords, end_coords = extract_maze_data(maze_data)
-    maze_data = {
-        'maze': maze,
-        'start_coords': start_coords,
-        'end_coords': end_coords
-    }
     list_mazes.append(maze_data)
-
-
-    #display_maze(maze_data)
 
 class TestApp(unittest.TestCase):
     @classmethod
@@ -112,20 +105,82 @@ def test_astar(x):
     for _ in sol1:
         count1 +=1
     return count1, total_time
+def test_worker(x, results,y):
+    alg=""
+    test_app = app.test_client()
+    total_time=0
+    if(x==1):#astar
+        alg="Astar"
+        test_app = app.test_client()
+        start_time = time.time()
+        response2 = test_app.post("/api/algorithm/astar", json=list_mazes[y])
+        end_time = time.time()
+        total_time = end_time - start_time
+    elif x==2:#dijkstra
+        alg="Dijkstra"
+        test_app = app.test_client()
+        start_time = time.time()
+        response2 = test_app.post("/api/algorithm/dijkstra", json=list_mazes[y])
+        end_time = time.time()
+        total_time = end_time - start_time
+    else:#beam
+        alg="Beam search"
+        test_app = app.test_client()
+        start_time = time.time()
+        response2 = test_app.post("/api/algorithm/beam_search", json=list_mazes[y])
+        end_time = time.time()
+        total_time = end_time - start_time
+    lock.acquire()
+    #print segment
+    json_data1 = response2.json
+    sol_buff = json_data1['solution']
+    sol1 = [tuple(coords) for coords in sol_buff]
+    count1=0
+    for _ in sol1:
+        count1 +=1
+    #print(f"{alg} took {total_time} to finish and in {count1} moves!")
+    results.append((alg, count1, total_time))
+    lock.release()
+    return count1, total_time
+    
 
 if __name__ == '__main__':
     print("algorithm testing started!")
-    for x in range (0,100):
-        (generate_maze(100, 150))
-    #unittest.main()
+    row=5
+    col=5
+    for x in range (0,50):
+        (test_generate_maze(row, col))
+        if row<col:
+            row += 5
+        else:
+            col += 5
     total_moves1=0
     total_time1=0
+    #testing mazes from small to large
     print("mazes generated!")
-    for x in range (0,100):
-        curr_move, curr_time =test_astar(x)
-        total_moves1 += curr_move
-        total_time1 += curr_time
-    print(f"Astar algorithm, avg time: {total_time1/100} seconds, avg required moves: {total_moves1/100} moves")
+    row=5
+    col=5
+    for x in range (0,50):
+        threads = []
+        for i in range(3):
+            thread = threading.Thread(target=test_worker, args=(i,results,x))
+            threads.append(thread)
+            thread.start()
+        for thread in threads:
+            thread.join()
+        #all done
+        print(f"for maze size {row}x{col}, here is the best: {results[0]}")
+        if row<col:
+            row += 5
+        else:
+            col += 5
+        results=[]
+        
+    #print(f"Astar algorithm, avg time: {total_time1/100} seconds, avg required moves: {total_moves1/100} moves")
+
+
+    #
+    """
     total_moves2=0
     total_time2=0
     for x in range (0,100):
@@ -140,4 +195,4 @@ if __name__ == '__main__':
         total_moves3 += curr_move
         total_time3 += curr_time
     print(f"Beam Search algorithm, avg time: {total_time3/100} seconds, avg required moves: {total_moves3/100} moves")
-    
+    """
