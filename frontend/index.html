@@ -9,27 +9,57 @@
 <body>
     <script src="js/script.js"></script>
 
-    <div>Blue: A*</div>
-    <div>Green: Dijkstra</div>
-    <div>Orange: Beam Search</div>
-    <div id="mazeContainer"></div>
-    <table border="1">
-        <tbody>
-            <tr>
-                <td>Number of Rows</td>
-                <td><input type="number" id="N_rows" placeholder="50" value="50"></td>
-            </tr>
-            <tr>
-                <td>Number of Columns</td>
-                <td><input type="number" id="N_Cols" placeholder="50" value="50"></td>
-            </tr>
-            <tr>
-                <td>Max Time (seconds)</td>
-                <td><input type="number" id="maxTime" placeholder="5" value="5"></td>
-            </tr>
-        </tbody>
-    </table>
-    <button id="fetchButton" onclick="generate_maze()">Start</button>
-    <div id="timer">00:00:00.000</div>
+    <div class="container">
+        <div class="main">
+            <div id="mazeContainer">
+                <canvas></canvas>
+            </div>
+
+            <div class="controls">
+                <table border="1">
+                    <tbody>
+                        <tr>
+                            <td>Number of Rows</td>
+                            <td><input type="number" id="N_rows" placeholder="50" value="50"></td>
+                        </tr>
+                        <tr>
+                            <td>Number of Columns</td>
+                            <td><input type="number" id="N_Cols" placeholder="50" value="50"></td>
+                        </tr>
+                        <tr>
+                            <td>Max Time (seconds)</td>
+                            <td><input type="number" id="maxTime" placeholder="5" value="5"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button id="fetchButton" onclick="generateMaze()">Start</button>
+                <div id="timer">00:00:00.000</div>
+            </div>
+        </div>
+
+        <div class="sidebar">
+            <div class="info">
+                <div><span class="color-box blue"></span>A*</div>
+                <div><span class="color-box green"></span>Dijkstra</div>
+                <div><span class="color-box orange"></span>Beam Search</div>
+            </div>
+
+            <div class="scoreboard">
+                <div class="tabs">
+                    <div class="tab-button active" onclick="showScoreboard('time')">Time</div>
+                    <div class="tab-button" onclick="showScoreboard('steps')">Step</div>
+                </div>
+                <div class="scoreboard-content">
+                    <h3>Scoreboard</h3>
+                    <div id="time-scoreboard" class="scoreboard-tab active">
+                        <!-- Time scoreboard content will go here -->
+                    </div>
+                    <div id="steps-scoreboard" class="scoreboard-tab">
+                        <!-- Step scoreboard content will go here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

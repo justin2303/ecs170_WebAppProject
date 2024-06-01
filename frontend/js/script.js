@@ -1,12 +1,18 @@
 const serverUrl = 'http://localhost:5000';
 
-function generate_maze() {
+function reset() {
     stopTimer();
     document.getElementById("fetchButton").disabled = true;
 
     setTimeout(() => {
         document.getElementById("fetchButton").disabled = false;
     }, 100);
+
+    
+}
+
+function generateMaze() {
+    reset();
 
     var numRows = document.getElementById("N_rows").value;
     var numCols = document.getElementById("N_Cols").value;
@@ -201,6 +207,32 @@ async function animateSolutions(aStarData, dijkstraData, beamSearchData) {
 
     stopTimer();
 
+    const solutions = [
+        { name: "A*", time: aStarSimTimeElapsed, steps: aStarData.solution.length },
+        { name: "Dijkstra", time: dijkstraSimTimeElapsed, steps: dijkstraData.solution.length },
+        { name: "Beam Search", time: beamSearchSimTimeElapsed, steps: beamSearchData.solution.length }
+    ];
+
+    const timeScoreboard = document.getElementById("time-scoreboard");
+    const stepsScoreboard = document.getElementById("steps-scoreboard");
+
+    timeScoreboard.innerHTML = '';
+    stepsScoreboard.innerHTML = '';
+
+    solutions.sort((a, b) => a.time - b.time);
+    solutions.forEach((solution, index) => {
+        const div = document.createElement('div');
+        div.textContent = `${index + 1}. ${solution.name}: ${solution.time.toFixed(3)} s`;
+        timeScoreboard.appendChild(div);
+    });
+
+    solutions.sort((a, b) => a.steps - b.steps);
+    solutions.forEach((solution, index) => {
+        const div = document.createElement('div');
+        div.textContent = `${index + 1}. ${solution.name}: ${solution.steps} steps`;
+        stepsScoreboard.appendChild(div);
+    });
+
     console.log("A*: # of Steps =", aStarData.solution.length, "| Sim Time Elapsed (s) =", aStarSimTimeElapsed, "| Actual Time Elapsed (s) =", aStarData.timeElapsed);
     console.log("Dijkstra: # of Steps =", dijkstraData.solution.length, "| Sim Time Elapsed (s) =", dijkstraSimTimeElapsed, "| Actual Time Elapsed (s) =", dijkstraData.timeElapsed);
     console.log("Beam Search: # of Steps =", beamSearchData.solution.length, "| Sim Time Elapsed (s) =", beamSearchSimTimeElapsed, "| Actual Time Elapsed (s) =", beamSearchData.timeElapsed);
@@ -237,3 +269,20 @@ function updateTimer() {
 function stopTimer() {
     clearInterval(timerInterval);
 }
+
+function showScoreboard(type) {
+    document.querySelectorAll('.scoreboard-tab').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-button').forEach(el => el.classList.remove('active'));
+
+    if (type === 'time') {
+        document.getElementById('time-scoreboard').classList.add('active');
+        document.querySelector('.tab-button[onclick="showScoreboard(\'time\')"]').classList.add('active');
+    } else if (type === 'steps') {
+        document.getElementById('steps-scoreboard').classList.add('active');
+        document.querySelector('.tab-button[onclick="showScoreboard(\'steps\')"]').classList.add('active');
+    }
+}
+
+document.getElementById('fetchButton').addEventListener('click', function() {
+    showScoreboard('time');
+});
