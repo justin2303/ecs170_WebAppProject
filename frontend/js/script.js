@@ -32,7 +32,7 @@ function generateMaze() {
 
         const aStarData = await getAStarData(data.maze, data.start_coords, data.end_coords);
         const dijkstraData = await getDijkstraData(data.maze, data.start_coords, data.end_coords);
-        const beamSearchData = await getBeamSearchData(data.maze, data.start_coords, data.end_coords, 20);
+        const beamSearchData = await getBeamSearchData(data.maze, data.start_coords, data.end_coords, parseInt(document.getElementById("beamWidth").value));
 
         startTimer();
         await animateSolutions(aStarData, dijkstraData, beamSearchData);
