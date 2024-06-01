@@ -112,24 +112,15 @@ def test_worker(x, results,y):
     if(x==1):#astar
         alg="Astar"
         test_app = app.test_client()
-        start_time = time.time()
         response2 = test_app.post("/api/algorithm/astar", json=list_mazes[y])
-        end_time = time.time()
-        total_time = end_time - start_time
     elif x==2:#dijkstra
         alg="Dijkstra"
         test_app = app.test_client()
-        start_time = time.time()
         response2 = test_app.post("/api/algorithm/dijkstra", json=list_mazes[y])
-        end_time = time.time()
-        total_time = end_time - start_time
     else:#beam
         alg="Beam search"
         test_app = app.test_client()
-        start_time = time.time()
         response2 = test_app.post("/api/algorithm/beam_search", json=list_mazes[y])
-        end_time = time.time()
-        total_time = end_time - start_time
     lock.acquire()
     #print segment
     json_data1 = response2.json
@@ -138,6 +129,7 @@ def test_worker(x, results,y):
     count1=0
     for _ in sol1:
         count1 +=1
+    total_time = json_data1['timeElapsed']
     #print(f"{alg} took {total_time} to finish and in {count1} moves!")
     results.append((alg, count1, total_time))
     lock.release()
@@ -169,7 +161,11 @@ if __name__ == '__main__':
         for thread in threads:
             thread.join()
         #all done
-        print(f"for maze size {row}x{col}, here is the best: {results[0]}")
+        best=results[0]
+        for a in range(3):
+            if(results[a][2]<best[2]):
+                best=results[a]
+        print(f"for maze size {row}x{col}, here is the best: {best}")
         if row<col:
             row += 5
         else:
