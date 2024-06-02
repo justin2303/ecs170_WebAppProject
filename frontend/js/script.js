@@ -6,9 +6,7 @@ function reset() {
 
     setTimeout(() => {
         document.getElementById("fetchButton").disabled = false;
-    }, 100);
-
-    
+    }, 2000);
 }
 
 function generateMaze() {
