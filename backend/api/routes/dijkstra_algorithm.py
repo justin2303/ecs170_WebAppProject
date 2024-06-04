@@ -14,6 +14,9 @@ def solve_maze_dijkstra():
         end_time = time.perf_counter()
 
         elapsed_time = end_time - start_time
+
+        if not solution:
+            raise Exception("No path")
     except ValueError as e:
         return jsonify({ 'error': str(e)} ), 400
     

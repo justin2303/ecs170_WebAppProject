@@ -1,13 +1,19 @@
 const serverUrl = 'http://localhost:5000';
 
+document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById("fetchButton").disabled = false;
+    document.getElementById("fetchButton2").disabled = true;
+});
+
 function reset() {
     stopTimer();
     document.getElementById("fetchButton").disabled = true;
-
-    setTimeout(() => {
-        document.getElementById("fetchButton").disabled = false;
-    }, 2000);
+    document.getElementById("fetchButton2").disabled = true;
+    document.getElementById("time-scoreboard").innerHTML='';
+    document.getElementById("steps-scoreboard").innerHTML='';
 }
+
+let lastMazeData = null;
 
 function generateMaze() {
     reset();
@@ -26,19 +32,35 @@ function generateMaze() {
     })
     .then(async data => {
         // Do something with the JSON data returned from the Flask endpoint
-        drawMaze(data.maze, data.start_coords, data.end_coords);
-
         const aStarData = await getAStarData(data.maze, data.start_coords, data.end_coords);
         const dijkstraData = await getDijkstraData(data.maze, data.start_coords, data.end_coords);
         const beamSearchData = await getBeamSearchData(data.maze, data.start_coords, data.end_coords, parseInt(document.getElementById("beamWidth").value));
 
-        startTimer();
+        drawMaze(data.maze, data.start_coords, data.end_coords);
         await animateSolutions(aStarData, dijkstraData, beamSearchData);
+
+        lastMazeData = data;
+        document.getElementById("fetchButton").disabled = false;
+        document.getElementById("fetchButton2").disabled = false;
     })
     .catch(error => {
-        // Handle any errors that occur during the fetch request
-        console.error('Error:', error);
+        console.error(error);
+        generateMaze();
     });
+}
+
+async function redoLastMaze() {
+    reset();
+
+    const data = lastMazeData;
+    drawMaze(data.maze, data.start_coords, data.end_coords);
+    const aStarData = await getAStarData(data.maze, data.start_coords, data.end_coords);
+    const dijkstraData = await getDijkstraData(data.maze, data.start_coords, data.end_coords);
+    const beamSearchData = await getBeamSearchData(data.maze, data.start_coords, data.end_coords, parseInt(document.getElementById("beamWidth").value));
+    await animateSolutions(aStarData, dijkstraData, beamSearchData);
+
+    document.getElementById("fetchButton").disabled = false;
+    document.getElementById("fetchButton2").disabled = false;
 }
 
 // Define your maze as a 2D array of 1s and 0s
@@ -197,12 +219,12 @@ async function animateSolutions(aStarData, dijkstraData, beamSearchData) {
     const dijkstraSimTimeElapsed = maxTimeSeconds * dijkstraRatio;
     const beamSearchSimTimeElapsed = maxTimeSeconds * beamSearchRatio;
 
+    startTimer();
     await Promise.all([
         animateSolution(aStarData.solution, "rgba(0, 0, 255, 0.5)", aStarSimTimeElapsed), // blue
         animateSolution(dijkstraData.solution, "rgba(0, 255, 0, 0.5)", dijkstraSimTimeElapsed), // green
         animateSolution(beamSearchData.solution, "rgba(255, 165, 0, 0.5)", beamSearchSimTimeElapsed) // orange
     ]);
-
     stopTimer();
 
     const solutions = [
@@ -280,7 +302,3 @@ function showScoreboard(type) {
         document.querySelector('.tab-button[onclick="showScoreboard(\'steps\')"]').classList.add('active');
     }
 }
-
-document.getElementById('fetchButton').addEventListener('click', function() {
-    showScoreboard('time');
-});

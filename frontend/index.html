@@ -32,12 +32,12 @@
                         </tr>
                         <tr>
                             <td>Beam Width</td>
-                            <td><input type="number" id="beamWidth" placeholder="1" value="1"></td>
+                            <td><input type="number" id="beamWidth" placeholder="3" value="3"></td>
                         </tr>
                     </tbody>
                 </table>
                 <button id="fetchButton" onclick="generateMaze()">Start</button>
-                <div id="timer">00:00:00.000</div>
+                <button id="fetchButton2" onclick="redoLastMaze()" disabled>Redo</button>
             </div>
         </div>
 
@@ -49,6 +49,7 @@
             </div>
 
             <div class="scoreboard">
+                <div id="timer">00:00:00.000</div>
                 <div class="tabs">
                     <div class="tab-button active" onclick="showScoreboard('time')">Time</div>
                     <div class="tab-button" onclick="showScoreboard('steps')">Step</div>

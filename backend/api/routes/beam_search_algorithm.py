@@ -26,6 +26,9 @@ def solve_maze_beam_search():
         solution = []
         for node in path:
             solution.append((node.y, node.x))
+
+        if not solution:
+            raise Exception("No path")
     except ValueError as e:
         return jsonify( {'error': str(e)} ), 400
     

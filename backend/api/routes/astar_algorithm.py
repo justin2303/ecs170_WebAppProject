@@ -14,6 +14,9 @@ def solve_maze_astar():
         end_time = time.perf_counter()
 
         elapsed_time = end_time - start_time
+
+        if not solution:
+            raise Exception("No path")
     except ValueError as e:
         print(e)
         return jsonify( {'error': str(e)} ), 400
@@ -138,7 +141,7 @@ def astar(maze, start, end):
             heapq.heappush(open_spots, child)
             
     #
-    return "Couldn't find a path to the end of the maze."
+    return None
 
 def mazeCreate():
     
