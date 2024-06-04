@@ -143,9 +143,9 @@ if __name__ == '__main__':
     for x in range (0,50):
         (test_generate_maze(row, col))
         if row<col:
-            row += 5
+            row += 20
         else:
-            col += 5
+            col += 20
     total_moves1=0
     total_time1=0
     #testing mazes from small to large
@@ -167,9 +167,9 @@ if __name__ == '__main__':
                 best=results[a]
         print(f"for maze size {row}x{col}, here is the best: {best}")
         if row<col:
-            row += 5
+            row += 20
         else:
-            col += 5
+            col += 20
         results=[]
         
     #print(f"Astar algorithm, avg time: {total_time1/100} seconds, avg required moves: {total_moves1/100} moves")
