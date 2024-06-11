@@ -17,7 +17,7 @@ def solve_maze_astar():
 
         if not solution:
             raise Exception("No path")
-    except ValueError as e:
+    except Exception as e:
         print(e)
         return jsonify( {'error': str(e)} ), 400
     

@@ -1,9 +1,9 @@
+import random
+
 from flask import jsonify
 from api import app
 from api.utils.misc import extract_maze_data
 
-import random
-import queue
 class Coords:
     def __init__(self, x, y):
         self.X = x
@@ -49,11 +49,6 @@ def generate_maze(dim1, dim2):
     }
     return jsonify(maze_data), 200
 
-def make_test_maze(dim1, dim2):
-    #for now ignore dim1dim2
-    maze = make_prims_maze(dim1,dim2)
-    return maze
-
 def get_neighbors(maze, coord):
     neighbors=[]
     if coord.X < len(maze[0]) - 1:
@@ -69,11 +64,6 @@ def get_neighbors(maze, coord):
         new_coord = Coords(coord.X , coord.Y + 1)
         neighbors.append(new_coord)
     return neighbors
-
-def get_dist(start, current):
-    print(start, current)
-    return abs(start.X-current.X) + abs(start.Y-current.Y)
-#try prims.
 
 def get_frontier(maze, coord):
     neighbors=[]

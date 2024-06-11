@@ -17,7 +17,7 @@ def solve_maze_dijkstra():
 
         if not solution:
             raise Exception("No path")
-    except ValueError as e:
+    except Exception as e:
         return jsonify({ 'error': str(e)} ), 400
     
     return jsonify({ 'solution': solution, 'timeElapsed': elapsed_time }), 200

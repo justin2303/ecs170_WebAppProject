@@ -37,5 +37,5 @@ def display_maze(maze_data):
             elif cell == 1:
                 print('\u2588', end=' ')
             else:
-                print('0', end=' ')
+                print(' ', end=' ')
         print()
